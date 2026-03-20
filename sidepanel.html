@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scratch Pad</title>
+  <link rel="stylesheet" href="sidepanel.css">
+</head>
+<body>
+  <div id="app">
+    <header>
+      <div class="tab-bar">
+        <div class="tabs-scroll" id="tabs-container"></div>
+        <button class="btn-icon new-tab-btn" id="new-tab-btn" title="New tab (Ctrl+N)">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+            <line x1="7" y1="2" x2="7" y2="12"/><line x1="2" y1="7" x2="12" y2="7"/>
+          </svg>
+        </button>
+      </div>
+      <div class="toolbar">
+        <button class="btn-icon theme-btn" id="theme-btn" title="Toggle theme">
+          <svg id="theme-icon-light" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+          </svg>
+          <svg id="theme-icon-dark" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        </button>
+        <button class="btn-icon settings-btn" id="settings-btn" title="Settings">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <textarea id="editor" spellcheck="false" placeholder="Start typing..."></textarea>
+    </main>
+
+    <footer>
+      <span class="stats" id="stats">0 chars · 0 words</span>
+      <button class="share-btn" id="share-btn" title="Share as Gist (Ctrl+S)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/>
+        </svg>
+        Share
+      </button>
+    </footer>
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="modal-overlay hidden" id="settings-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Settings</h2>
+        <button class="btn-icon modal-close" id="settings-close">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+            <line x1="2" y1="2" x2="12" y2="12"/><line x1="12" y1="2" x2="2" y2="12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <label class="field-label" for="github-pat">GitHub Personal Access Token</label>
+        <p class="field-hint">Create a token at <a href="https://github.com/settings/tokens" target="_blank">github.com/settings/tokens</a> with the <code>gist</code> scope.</p>
+        <input type="password" id="github-pat" class="text-input" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off">
+        <div class="field-actions">
+          <button class="btn btn-primary" id="save-settings">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Share Result Modal -->
+  <div class="modal-overlay hidden" id="share-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Shared!</h2>
+        <button class="btn-icon modal-close" id="share-close">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+            <line x1="2" y1="2" x2="12" y2="12"/><line x1="12" y1="2" x2="2" y2="12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <label class="field-label">Gist URL</label>
+        <div class="url-row">
+          <input type="text" id="gist-url" class="text-input" readonly>
+          <button class="btn btn-sm" id="copy-gist-url" title="Copy">Copy</button>
+        </div>
+        <label class="field-label" style="margin-top:12px">Raw URL <span class="field-hint-inline">(for LLMs)</span></label>
+        <div class="url-row">
+          <input type="text" id="raw-url" class="text-input" readonly>
+          <button class="btn btn-sm" id="copy-raw-url" title="Copy">Copy</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast hidden" id="toast"></div>
+
+  <script src="sidepanel.js"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "Scratch Pad",
+  "version": "1.0.0",
+  "description": "A lightweight sidebar notepad with GitHub Gist sharing",
+  "permissions": ["sidePanel", "storage", "activeTab"],
+  "host_permissions": ["https://api.github.com/*"],
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "Open Scratch Pad"
+  }
+}
