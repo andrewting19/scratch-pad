@@ -10,6 +10,7 @@
   };
 
   let saveTimeout = null;
+  let lastSaveTime = 0;
 
   // ── DOM ──
 
@@ -45,14 +46,18 @@
     clearTimeout(saveTimeout);
     saveTimeout = setTimeout(() => {
       try {
+        lastSaveTime = Date.now();
         chrome.storage.local.set({ scratchpad_state: state });
       } catch { /* ignore */ }
+      saveTimeout = null;
     }, 300);
   }
 
   function saveStateImmediate() {
     clearTimeout(saveTimeout);
+    saveTimeout = null;
     try {
+      lastSaveTime = Date.now();
       chrome.storage.local.set({ scratchpad_state: state });
     } catch { /* ignore */ }
   }
@@ -419,6 +424,33 @@
       overlay.addEventListener('click', (e) => {
         if (e.target === overlay) overlay.classList.add('hidden');
       });
+    });
+
+    // Sync state from other windows/tabs
+    chrome.storage.onChanged.addListener((changes, area) => {
+      if (area !== 'local' || !changes.scratchpad_state) return;
+      // Ignore changes triggered by our own saves
+      if (saveTimeout || Date.now() - lastSaveTime < 500) return;
+      const incoming = changes.scratchpad_state.newValue;
+      if (!incoming) return;
+
+      const localPat = state.settings && state.settings.githubPat;
+
+      state = { ...state, ...incoming };
+
+      // Never let a sync from another window erase a saved token
+      if (localPat && state.settings && !state.settings.githubPat) {
+        state.settings.githubPat = localPat;
+      }
+
+      // If the active tab still exists, restore editor position
+      const stillExists = state.tabs.find(t => t.id === state.activeTabId);
+      if (!stillExists && state.tabs.length > 0) {
+        state.activeTabId = state.tabs[0].id;
+      }
+
+      render();
+      applyTheme();
     });
 
     // Save on unload
